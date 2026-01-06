@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 
 interface Header3DProps {
     title: string;
@@ -9,6 +10,9 @@ interface Header3DProps {
 }
 
 export const Header3D: React.FC<Header3DProps> = ({ title, logo }) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     return (
         <SafeAreaView edges={['top']} style={styles.container}>
             <View style={styles.content}>
@@ -22,9 +26,9 @@ export const Header3D: React.FC<Header3DProps> = ({ title, logo }) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
-        backgroundColor: '#4B9F8E', // Slightly lighter than theme.colors.primary (#2A9D8F)
+        backgroundColor: theme.colors.secondary,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
         ...theme.shadows.card,

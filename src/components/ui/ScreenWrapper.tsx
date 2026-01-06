@@ -1,22 +1,28 @@
 // Basic Screen Wrapper to ensure consistency
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 
-export const ScreenWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <View style={styles.container}>
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}
-        >
-            <ScrollView contentContainerStyle={styles.scroll}>
-                {children}
-            </ScrollView>
-        </KeyboardAvoidingView>
-    </View>
-);
+export const ScreenWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
 
-const styles = StyleSheet.create({
+    return (
+        <View style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.scroll}>
+                    {children}
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </View>
+    );
+};
+
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,

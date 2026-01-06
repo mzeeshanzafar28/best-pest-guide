@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
 import { Header3D } from '../../components/ui/Header3D';
 import { ContentCard } from '../../components/ui/ContentCard';
-import { theme } from '../../theme/theme';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { NeumorphicButton } from '../../components/ui/NeumorphicButton';
-import { FontAwesome5, MaterialIcons } from '@expo/vector-icons'; // Assuming Expo
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 
 export const HomeScreen = ({ navigation }: any) => {
     const { user, logout } = useAuth();
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
 
     const DashboardItem = ({ title, icon, color, onPress }: any) => (
         <TouchableOpacity
@@ -34,12 +37,13 @@ export const HomeScreen = ({ navigation }: any) => {
                 <Text style={styles.welcomeText}>Welcome, {user?.email?.split('@')[0]}!</Text>
 
                 <ContentCard style={styles.bannerCard}>
-                    <Text style={styles.bannerTitle}>Pest Problem?</Text>
+                    <Text style={styles.bannerTitle}>Pest problem?</Text>
                     <Text style={styles.bannerText}>Find the best solutions to your pest issues.</Text>
                     <NeumorphicButton
                         title="Browse Guides"
                         onPress={() => navigation.navigate('GuidesTab')}
                         style={{ marginTop: 10, width: '100%' }}
+                        variant="white" // Ensure visibility on primary color bg
                     />
                 </ContentCard>
 
@@ -77,6 +81,7 @@ export const HomeScreen = ({ navigation }: any) => {
                         <NeumorphicButton
                             title="Upgrade Now"
                             variant="white"
+                            textStyle={{ color: '#000' }}
                             onPress={() => navigation.navigate('Subscription')}
                         />
                     </ContentCard>
@@ -93,7 +98,7 @@ export const HomeScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
@@ -130,7 +135,7 @@ const styles = StyleSheet.create({
     },
     dashboardItem: {
         width: '48%',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.card, // Dynamic card color
         borderRadius: 15,
         padding: 20,
         marginBottom: 15,
@@ -149,12 +154,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: theme.colors.text,
     },
-    logoContainer: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    logo: {
-        width: 200,
-        height: 100,
-    }
 });

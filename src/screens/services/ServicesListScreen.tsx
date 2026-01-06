@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Header3D } from '../../components/ui/Header3D';
 import { ContentCard } from '../../components/ui/ContentCard';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { getServices } from '../../services/services';
 import { Service } from '../../types';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 export const ServicesListScreen = ({ navigation }: any) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -44,7 +48,7 @@ export const ServicesListScreen = ({ navigation }: any) => {
             <Header3D title="Our Services" />
             <View style={styles.listContainer}>
                 {loading ? (
-                    <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading services...</Text>
+                    <Text style={{ textAlign: 'center', marginTop: 20, color: theme.colors.text }}>Loading services...</Text>
                 ) : (
                     <FlatList
                         data={services}
@@ -58,7 +62,7 @@ export const ServicesListScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
@@ -68,6 +72,7 @@ const styles = StyleSheet.create({
     },
     card: {
         marginBottom: 15,
+        backgroundColor: theme.colors.card,
     },
     cardHeader: {
         flexDirection: 'row',

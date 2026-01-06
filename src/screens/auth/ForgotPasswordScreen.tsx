@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { NeumorphicButton } from '../../components/ui/NeumorphicButton';
 import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 
 export const ForgotPasswordScreen = ({ navigation }: any) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     const [email, setEmail] = useState('');
 
     const handleReset = () => {
@@ -22,6 +26,7 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
             <View style={[styles.formCard, theme.shadows.card]}>
                 <TextInput
                     placeholder="Email"
+                    placeholderTextColor={theme.colors.grey}
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
@@ -44,7 +49,7 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     header: {
         alignItems: 'center',
         marginBottom: 40,
@@ -61,16 +66,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     formCard: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.card,
         padding: 20,
         borderRadius: 20,
     },
     input: {
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.dark ? '#333' : theme.colors.background,
         padding: 15,
         borderRadius: 10,
         marginBottom: 15,
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: theme.colors.border,
+        color: theme.colors.text,
     }
 });

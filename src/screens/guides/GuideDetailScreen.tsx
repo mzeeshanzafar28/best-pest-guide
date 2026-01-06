@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Image, useWindowDimensions } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
 import { Header3D } from '../../components/ui/Header3D';
 import { ContentCard } from '../../components/ui/ContentCard';
 import { NeumorphicButton } from '../../components/ui/NeumorphicButton';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { useAuth } from '../../context/AuthContext';
 import { Guide } from '../../types';
 import RenderHtml from 'react-native-render-html';
@@ -15,6 +16,8 @@ export const GuideDetailScreen = ({ navigation }: any) => {
     const { guide } = route.params as { guide: Guide };
     const { user } = useAuth();
     const { width } = useWindowDimensions();
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
 
     const isLocked = guide.isPaid && !user?.isPremium;
 
@@ -46,14 +49,15 @@ export const GuideDetailScreen = ({ navigation }: any) => {
                         </View>
                     ) : (
                         <RenderHtml
-                            contentWidth={width - 90} // Adjusted for ScreenWrapper padding (40) + ContentCard margin (10) + ContentCard padding (40)
+                            contentWidth={width - 90}
                             source={{ html: guide.content }}
                             tagsStyles={{
                                 p: { fontSize: 16, color: theme.colors.text, marginBottom: 10, lineHeight: 24 },
                                 h1: { fontSize: 22, color: theme.colors.primary, marginVertical: 10 },
                                 h2: { fontSize: 20, color: theme.colors.secondary, marginVertical: 8 },
                                 li: { fontSize: 16, color: theme.colors.text },
-                                img: { marginVertical: 10, borderRadius: 10 }
+                                img: { marginVertical: 10, borderRadius: 10 },
+                                body: { color: theme.colors.text }
                             }}
                         />
                     )}
@@ -70,7 +74,7 @@ export const GuideDetailScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
@@ -95,7 +99,7 @@ const styles = StyleSheet.create({
     lockedContainer: {
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#FFE5EC',
+        backgroundColor: theme.dark ? '#330000' : '#FFE5EC',
         borderRadius: 10,
         marginBottom: 20,
     },

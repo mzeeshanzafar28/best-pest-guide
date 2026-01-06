@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 
 interface ContentCardProps {
     children: React.ReactNode;
@@ -8,6 +9,9 @@ interface ContentCardProps {
 }
 
 export const ContentCard: React.FC<ContentCardProps> = ({ children, style }) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     return (
         <View style={[styles.card, theme.shadows.card, style]}>
             {children}
@@ -15,9 +19,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({ children, style }) => 
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     card: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.card, // Use new 'card' color token
         borderRadius: 15,
         padding: 20,
         marginVertical: 10,

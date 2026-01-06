@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { NeumorphicButton } from '../../components/ui/NeumorphicButton';
 import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export const SignupScreen = ({ navigation }: any) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +21,7 @@ export const SignupScreen = ({ navigation }: any) => {
             await signup(email, password);
         } catch (e: any) {
             console.error(e);
-            let msg = 'Failed to create account';
+            let msg = 'Failed to created account';
             if (e.code === 'auth/email-already-in-use') msg = 'Email already in use';
             if (e.code === 'auth/weak-password') msg = 'Password is too weak';
             if (e.code === 'auth/invalid-email') msg = 'Invalid email address';
@@ -35,6 +39,7 @@ export const SignupScreen = ({ navigation }: any) => {
             <View style={[styles.formCard, theme.shadows.card]}>
                 <TextInput
                     placeholder="Email"
+                    placeholderTextColor={theme.colors.grey}
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
@@ -44,6 +49,7 @@ export const SignupScreen = ({ navigation }: any) => {
                 <View style={styles.passwordContainer}>
                     <TextInput
                         placeholder="Password"
+                        placeholderTextColor={theme.colors.grey}
                         style={styles.passwordInput}
                         value={password}
                         onChangeText={setPassword}
@@ -77,7 +83,7 @@ export const SignupScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     header: {
         alignItems: 'center',
         marginBottom: 40,
@@ -93,30 +99,32 @@ const styles = StyleSheet.create({
         color: theme.colors.text,
     },
     formCard: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.card,
         padding: 20,
         borderRadius: 20,
     },
     input: {
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.dark ? '#333' : theme.colors.background,
         padding: 15,
         borderRadius: 10,
         marginBottom: 15,
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: theme.colors.border,
+        color: theme.colors.text,
     },
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.dark ? '#333' : theme.colors.background,
         borderRadius: 10,
         marginBottom: 15,
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: theme.colors.border,
     },
     passwordInput: {
         flex: 1,
         padding: 15,
+        color: theme.colors.text,
     },
     eyeIcon: {
         padding: 10,

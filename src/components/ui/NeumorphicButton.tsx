@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface NeumorphicButtonProps {
     title: string;
@@ -17,6 +17,8 @@ export const NeumorphicButton: React.FC<NeumorphicButtonProps> = ({
     textStyle,
     variant = 'primary'
 }) => {
+    const { theme } = useTheme();
+
     let backgroundColor = theme.colors.primary;
     let textColor = theme.colors.white;
 
@@ -25,6 +27,12 @@ export const NeumorphicButton: React.FC<NeumorphicButtonProps> = ({
     } else if (variant === 'danger') {
         backgroundColor = theme.colors.danger;
     } else if (variant === 'white') {
+        backgroundColor = theme.colors.card; // Using card color for 'white' variant in dark mode might be better, or explicit white
+        // In dark mode, 'white' variant usually implies high contrast background.
+        // If theme.colors.white is dark (in dark mode), this button will be dark. 
+        // We probably want it to be distinct. 
+        // Let's stick to theme.colors.white which is mapped to Dark Grey or Card color in dark mode, 
+        // and text primary.
         backgroundColor = theme.colors.white;
         textColor = theme.colors.primary;
     }
@@ -54,7 +62,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 10,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)', // Subtle highlight
+        borderColor: 'rgba(255,255,255,0.2)',
     },
     text: {
         fontSize: 16,

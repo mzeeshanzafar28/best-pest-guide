@@ -1,10 +1,10 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../theme/theme';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 // Screens
 import { LoginScreen } from '../screens/auth/LoginScreen';
@@ -31,14 +31,17 @@ const Tab = createBottomTabNavigator();
 
 // Tab Navigator for main content
 const MainTabNavigator = () => {
+    const { theme, isDarkMode } = useTheme();
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false as boolean,
                 tabBarStyle: {
-                    backgroundColor: theme.colors.white,
+                    backgroundColor: theme.colors.card, // Dynamic
                     borderTopWidth: 0,
-                    ...theme.shadows.card
+                    ...theme.shadows.card,
+                    // If dark mode, standard shadow might not show well, but we kept it in theme structure
                 },
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: 'gray',
@@ -85,13 +88,31 @@ const MainTabNavigator = () => {
 
 export const AppNavigator = () => {
     const { user, loading } = useAuth();
+    const { isDarkMode, theme } = useTheme();
 
     if (loading) {
         return null;
     }
 
+    // Create a React Navigation Theme object based on our theme
+    const baseTheme = isDarkMode ? DarkTheme : DefaultTheme;
+
+    // Create a React Navigation Theme object based on our theme
+    const navigationTheme = {
+        ...baseTheme,
+        colors: {
+            ...baseTheme.colors,
+            primary: theme.colors.primary,
+            background: theme.colors.background,
+            card: theme.colors.card,
+            text: theme.colors.text,
+            border: theme.colors.border,
+            notification: theme.colors.secondary,
+        },
+    };
+
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={navigationTheme}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {!user ? (
                     // Auth Stack

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, TextInput, Switch } from 'react-native';
 import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
 import { Header3D } from '../../components/ui/Header3D';
 import { ContentCard } from '../../components/ui/ContentCard';
 import { NeumorphicButton } from '../../components/ui/NeumorphicButton';
-import { theme } from '../../theme/theme';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../config/firebase';
@@ -14,6 +15,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export const AccountScreen = ({ navigation }: any) => {
     const { user, upgradeToPremium, logout, auth } = useAuth();
+    const { theme, toggleTheme, isDarkMode } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     const [image, setImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
 
@@ -180,6 +184,22 @@ export const AccountScreen = ({ navigation }: any) => {
                     </View>
                 </ContentCard>
 
+                {/* Dark Mode Toggle */}
+                <ContentCard style={styles.darkModeCard}>
+                    <View style={styles.darkModeRow}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <MaterialIcons name="dark-mode" size={24} color={theme.colors.text} style={{ marginRight: 10 }} />
+                            <Text style={styles.sectionTitle}>Dark Mode</Text>
+                        </View>
+                        <Switch
+                            value={isDarkMode}
+                            onValueChange={toggleTheme}
+                            trackColor={{ false: '#767577', true: theme.colors.primary }}
+                            thumbColor={isDarkMode ? theme.colors.white : '#f4f3f4'}
+                        />
+                    </View>
+                </ContentCard>
+
                 {/* Change Password Section */}
                 <ContentCard>
                     <TouchableOpacity
@@ -199,6 +219,7 @@ export const AccountScreen = ({ navigation }: any) => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Current Password"
+                                placeholderTextColor={theme.colors.grey}
                                 secureTextEntry
                                 value={currentPassword}
                                 onChangeText={setCurrentPassword}
@@ -206,6 +227,7 @@ export const AccountScreen = ({ navigation }: any) => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="New Password"
+                                placeholderTextColor={theme.colors.grey}
                                 secureTextEntry
                                 value={newPassword}
                                 onChangeText={setNewPassword}
@@ -213,6 +235,7 @@ export const AccountScreen = ({ navigation }: any) => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Confirm New Password"
+                                placeholderTextColor={theme.colors.grey}
                                 secureTextEntry
                                 value={confirmNewPassword}
                                 onChangeText={setConfirmNewPassword}
@@ -254,7 +277,7 @@ export const AccountScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
@@ -262,6 +285,7 @@ const styles = StyleSheet.create({
     profileCard: {
         alignItems: 'center',
         paddingVertical: 30,
+        backgroundColor: theme.colors.card,
     },
     imageContainer: {
         position: 'relative',
@@ -273,7 +297,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     placeholderImage: {
-        backgroundColor: '#e1e1e1',
+        backgroundColor: theme.colors.grey, // Updated
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -288,7 +312,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: 'white',
+        borderColor: theme.colors.white,
     },
     emailText: {
         fontSize: 18,
@@ -333,16 +357,27 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
     input: {
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.dark ? '#333' : '#f5f5f5', // Dynamic input bg
         padding: 12,
         borderRadius: 8,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: theme.colors.border,
+        color: theme.colors.text,
+    },
+    // Dark Mode Card
+    darkModeCard: {
+        marginBottom: 20,
+        backgroundColor: theme.colors.card,
+    },
+    darkModeRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     // Plan Card Styles
     planCard: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.card, // Updated to dynamic card color
         padding: 30,
         alignItems: 'center',
     },
@@ -360,7 +395,7 @@ const styles = StyleSheet.create({
     },
     perMonth: {
         fontSize: 16,
-        color: '#999',
+        color: theme.colors.grey,
     },
     features: {
         alignSelf: 'flex-start',

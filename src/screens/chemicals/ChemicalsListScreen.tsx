@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
 import { Header3D } from '../../components/ui/Header3D';
 import { ContentCard } from '../../components/ui/ContentCard';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { getChemicals } from '../../services/chemicals';
 import { Chemical } from '../../types';
-import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const ChemicalsListScreen = ({ navigation }: any) => {
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
+
     const [chemicals, setChemicals] = useState<Chemical[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -56,18 +59,18 @@ export const ChemicalsListScreen = ({ navigation }: any) => {
         <View style={styles.container}>
             <Header3D title="Chemicals" />
             <View style={styles.searchContainer}>
-                <MaterialIcons name="search" size={24} color="gray" style={styles.searchIcon} />
+                <MaterialIcons name="search" size={24} color={theme.colors.grey} style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search chemicals..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
-                    placeholderTextColor="gray"
+                    placeholderTextColor={theme.colors.grey}
                 />
             </View>
             <View style={styles.listContainer}>
                 {loading ? (
-                    <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading chemicals...</Text>
+                    <Text style={{ textAlign: 'center', marginTop: 20, color: theme.colors.text }}>Loading chemicals...</Text>
                 ) : (
                     <FlatList
                         data={filteredChemicals}
@@ -81,7 +84,7 @@ export const ChemicalsListScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
@@ -91,6 +94,7 @@ const styles = StyleSheet.create({
     },
     card: {
         marginBottom: 15,
+        backgroundColor: theme.colors.card,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.card,
         margin: 15,
         marginBottom: 5,
         borderRadius: 10,

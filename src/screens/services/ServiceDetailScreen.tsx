@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Linking, Image, useWindowDimensions } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { ScreenWrapper } from '../../components/ui/ScreenWrapper';
 import { Header3D } from '../../components/ui/Header3D';
 import { ContentCard } from '../../components/ui/ContentCard';
 import { NeumorphicButton } from '../../components/ui/NeumorphicButton';
-import { theme } from '../../theme/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme/theme';
 import { Service } from '../../types';
 import RenderHtml from 'react-native-render-html';
 
@@ -13,6 +14,8 @@ export const ServiceDetailScreen = ({ navigation }: any) => {
     const route = useRoute();
     const { service } = route.params as { service: Service };
     const { width } = useWindowDimensions();
+    const { theme } = useTheme();
+    const styles = useMemo(() => getStyles(theme), [theme]);
 
     const handleBookNow = () => {
         // Open dialer or contact form
@@ -40,14 +43,15 @@ export const ServiceDetailScreen = ({ navigation }: any) => {
 
                     {/* Rich HTML Content */}
                     <RenderHtml
-                        contentWidth={width - 90} // Adjusted for ScreenWrapper padding (40) + ContentCard margin (10) + ContentCard padding (40)
+                        contentWidth={width - 90}
                         source={{ html: service.content }}
                         tagsStyles={{
                             p: { fontSize: 16, color: theme.colors.text, marginBottom: 10, lineHeight: 24 },
                             h1: { fontSize: 22, color: theme.colors.primary, marginVertical: 10 },
                             h2: { fontSize: 20, color: theme.colors.secondary, marginVertical: 8 },
                             li: { fontSize: 16, color: theme.colors.text },
-                            img: { marginVertical: 10, borderRadius: 10 }
+                            img: { marginVertical: 10, borderRadius: 10 },
+                            body: { color: theme.colors.text }
                         }}
                     />
 
@@ -69,7 +73,7 @@ export const ServiceDetailScreen = ({ navigation }: any) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
